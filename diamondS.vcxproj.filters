@@ -4,9 +4,8 @@
     <ClCompile Include="src\ofApp.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\DiamondSquare.cpp" />
-    <ClCompile Include="src\GlobalConst.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\BIOMS.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

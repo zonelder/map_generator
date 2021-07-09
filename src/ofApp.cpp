@@ -1,35 +1,21 @@
 #include "ofApp.h"
 #include<cstdio>
 #include<ctime>
-#include <cmath>
-const unsigned  int Width = 1024;
-//const unsigned  int Height = 768;
-int m = -1000;
+#include "System.cpp"
+#include "BIOMS.cpp"
+unsigned const int Width = 1024;
+
+
 int waterLvl = 0;
-double roudness = 55;
 int boundVal = -500;
-int LandPerCent = 0;
-int HeightMap[Width][Width];
+unsigned int roudness = 55;
+int**HeightMap;//нужно удаление массива или создать класс карты и все атрибуты точек держать в этом классе. на каждую точку приходиться параметр высоты, владжности, температруы, расстояни до воды исцева открашивания
 int Temperature[Width][Width];
 int Wet[Width][Width];
 
 double t;
 using namespace std;
 
-
-bool edgeCondition(int coord_x, int coord_y, int reach)
-{
-	if (coord_x - reach == 0 || coord_x + reach == Width)
-		return true;
-	if (coord_y - reach == 0 || coord_y + reach == Width)
-		return true;
-
-	return false;
-}
-int random(int a, int b)
-{
-	return (a + rand() % int(b - a + 1));
-}
 int Temp(int j)
 {
 	if (j < Width / 2)
@@ -42,12 +28,13 @@ int Temp(int j)
 	}
 
 }
+/// <DIAMOND SQUARE>
 
-void squareStep(int Array[Width][Width], int x, int y, int reach)
+void squareStep(int** Array, int x, int y, int reach, unsigned int Width)
 {
 	int count = 0;
 	float avg = 0.0f;
-	if (edgeCondition(x, y, reach))
+	if (edgeCondition(x, y, reach, Width))
 	{
 		Array[x][y] = boundVal;
 		return;
@@ -76,11 +63,11 @@ void squareStep(int Array[Width][Width], int x, int y, int reach)
 	avg /= count;
 	Array[x][y] = round(avg);
 }
-void diamondStep(int Array[Width][Width], int x, int y, int reach)
+void diamondStep(int** Array, int x, int y, int reach, unsigned int Width)
 {
 	int count = 0;
 	float avg = 0.0f;
-	if (edgeCondition(x, y, reach))
+	if (edgeCondition(x, y, reach, Width))
 	{
 		Array[x][y] = boundVal;
 		return;
@@ -112,14 +99,14 @@ void diamondStep(int Array[Width][Width], int x, int y, int reach)
 		Array[x][y] = (int)avg;
 	}
 }
-void diamondSquare(int Array[Width][Width], int size)
+void diamondSquare(int** Array, int size, unsigned int Width)
 {
 	int half = size / 2;
 	if (half < 1)
 		return;
 	for (int y = half; y < Width; y += size)
 		for (int x = half; x < Width; x += size)
-			squareStep(Array, x % Width, y % Width, half);
+			squareStep(Array, x % Width, y % Width, half, Width);
 	int col = 0;
 	for (int x = 0; x < Width; x += half)
 	{
@@ -127,27 +114,37 @@ void diamondSquare(int Array[Width][Width], int size)
 		//If this is an odd column.
 		if (col % 2 == 1)
 			for (int z = half; z < Width; z += size)
-				diamondStep(Array, x % Width, z % Width, half);
+				diamondStep(Array, x % Width, z % Width, half, Width);
 		else
 			for (int z = 0; z < Width; z += size)
-				diamondStep(Array, x % Width, z % Width, half);
+				diamondStep(Array, x % Width, z % Width, half, Width);
 	}
-	diamondSquare(Array, size / 2);
+	diamondSquare(Array, size / 2, Width);
 }
-
+/// </DIAMOND SQUARE>
 void ofApp::setup(){
 	srand(time(0));
 	
 	
 	int Max = -1000;
 	int Min = 1000;
+	/*///////////////////////инициализация массива высот////////////////////////////*/
+	HeightMap = new int*[Width];
+	*HeightMap = new int[Width * Width];//нигде память не освобождается
 	for (int i = 0; i < Width; i++)
+
+	{
+		if(i!=0)
+		HeightMap[i] = HeightMap[i - 1] + Width;
 		for (int j = 0; j < Width; j++)
 		{
+
 			HeightMap[i][j] = 0;
 		}
+	}
+	/*///////////////////////////////////////////////////////////////////////////////*/
 	int size = Width;
-	diamondSquare(HeightMap, size / 2);
+	diamondSquare(HeightMap, size / 2,Width);
 	for (int i = 0; i < Width; i++)
 		for (int j = 0; j < Width; j++)
 		{
@@ -203,24 +200,38 @@ void ofApp::update(){
 void ofApp::draw(){
 	float normed = 255 / (255.0f - waterLvl);
 	ofBackground(255, 255, 255);
-	for (int i = camX; i < ofGetWidth()+camX; i++)
+	for (int i =0; i < ofGetWidth(); i++)
 	{	if (!(i<0 || i>Width))// если камера захватывает территорию без карты высот то там ничего не рисуем
-		for (int j = camY; j < ofGetHeight()+camY; j++)
+		for (int j = 0; j < ofGetHeight(); j++)
 		{
 			int h = (HeightMap[i][j] - waterLvl) * normed;
 			if (!(j<0 || j>Width))// если камера захватывает территорию без карты высот то там ничего не рисуем
 			{
-				if ((HeightMap[i][j]  <= waterLvl) && (HeightMap[i][j] >= -5 + waterLvl))
+				if ((HeightMap[i][j] <= waterLvl) && (HeightMap[i][j] >= -5 + waterLvl))
 					ofSetColor(0, 255, 255);//вода у берега
 				else
 					if ((HeightMap[i][j] <= -5 + waterLvl))
 						ofSetColor(0, 0, 128);
 					else
-						if ((HeightMap[i][j]  >= waterLvl) && (HeightMap[i][j] <= 1 + waterLvl))
+						if ((HeightMap[i][j] >= waterLvl) && (HeightMap[i][j] <= 1 + waterLvl))
 							ofSetColor(218, 165, 32);//песок
+
 						else
+							if (HeightMap[i][j] > 170)
+								ofSetColor(255, 250, 250);
+							else
+								if ((HeightMap[i][j] < 40) && (HeightMap[i][j] > 1 + waterLvl))
+									ofSetColor(144, 238, 144);
+								else
+									if (HeightMap[i][j] >= 40 && HeightMap[i][j] <= 80)
+										ofSetColor(205, 179, 139);
+									else
+										if (HeightMap[i][j] > 80 && HeightMap[i][j] < 170)
+											ofSetColor(139, 139, 141);
+										else
+
 							ofSetColor(h, h, h);
-				ofRect(i - camX, j - camY, 1, 1);
+				ofRect(i , j , 1, 1);
 			}
 
 		}
