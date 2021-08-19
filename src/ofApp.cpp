@@ -7,12 +7,12 @@ unsigned const int Width = 1024;
 
 
 int waterLvl = 0;
-int boundVal = -500;
-unsigned int roudness = 55;
+int boundVal = 0;
+unsigned int roudness = 1;
 int**HeightMap;//нужно удаление массива или создать класс карты и все атрибуты точек держать в этом классе. на каждую точку приходиться параметр высоты, владжности, температруы, расстояни до воды исцева открашивания
 int Temperature[Width][Width];
 int Wet[Width][Width];
-
+int persent = 0;
 double t;
 using namespace std;
 
@@ -61,6 +61,9 @@ void squareStep(int** Array, int x, int y, int reach, unsigned int Width)
 	}
 	avg += random(int(-roudness * reach), int(roudness * reach));
 	avg /= count;
+	if (avg < 0)
+		avg = 0;
+	else
 	Array[x][y] = round(avg);
 }
 void diamondStep(int** Array, int x, int y, int reach, unsigned int Width)
@@ -96,6 +99,9 @@ void diamondStep(int** Array, int x, int y, int reach, unsigned int Width)
 		}
 		avg += random(-roudness * reach, roudness * reach);
 		avg /= count;
+		if (avg < 0)
+			avg = 0;
+		else
 		Array[x][y] = (int)avg;
 	}
 }
@@ -126,8 +132,7 @@ void ofApp::setup(){
 	srand(time(0));
 	
 	
-	int Max = -1000;
-	int Min = 1000;
+	int Max = 0;
 	/*///////////////////////инициализация массива высот////////////////////////////*/
 	HeightMap = new int*[Width];
 	*HeightMap = new int[Width * Width];//нигде память не освобождается
@@ -148,50 +153,54 @@ void ofApp::setup(){
 	for (int i = 0; i < Width; i++)
 		for (int j = 0; j < Width; j++)
 		{
-			
-			if (HeightMap[i][j] >= 0)//учет эррозии
-			{
-				HeightMap[i][j] *= HeightMap[i][j];
-			}
-			else
-			{
-				HeightMap[i][j] *=-HeightMap[i][j];
-			}
+			HeightMap[i][j] *= HeightMap[i][j];
 			if (Max < HeightMap[i][j])
 			{
 				Max = HeightMap[i][j];
 			}
-			if (Min > HeightMap[i][j])
-			{
-				Min = HeightMap[i][j];
-			}
 		}
 	int MaxNormed = int(Max/255)+1;
-	int MinNormed = abs(int(Min / 255)-1);
-	 Max = -1000;
-	 Min = 1000;
+	Max = 0;
 	for (int i = 0; i < Width; i++)
 		for (int j = 0; j < Width; j++)
 		{
-			if (HeightMap[i][j] > 0) {
 				HeightMap[i][j] /= MaxNormed;//числа межлу -1000 и 256; можно еще и нормировать но я хочу оставить ноль недвижимой точкой, так получаеться 
-			}
-			else
-			{
-				HeightMap[i][j] /= MinNormed;
-			}
-			if (Max < HeightMap[i][j])//что морское дно гораздо ниже чем уровень материков,и при большой шероховатости(~50 ) получаеться добиться материков и островов
-				Max = HeightMap[i][j];
-			if(Min > HeightMap[i][j])
-			Min = HeightMap[i][j];
+				if (Max < HeightMap[i][j])
+					Max = HeightMap[i][j];
 	 }
-	cout << "height in range: " << Min << " - " << Max << endl;
+	cout << "height in range: " << 0 << " - " << Max << endl;
+	int fullArea = 0;
+	int dirt = 0;
+	
+	fullArea = Width * Width;
+	int need_persent = 24;
+	for(int step=0;step<100;step++){
+		bool is_up = true;
+		if (need_persent > persent)
+			waterLvl -= 1;
+		if(need_persent < persent)
+			waterLvl += 1;
+		
+		for (int i = 0; i < Width; i++)
+		for (int j = 0; j < Width; j++)
+		{
+			if (HeightMap[i][j] > waterLvl)
+				dirt++;
+		}
+		persent = float(dirt) / float(fullArea) * 100;
+		dirt = 0;
+	}
+	
+	
 }//так уменьшение температуры способствует уменьшению осадков но увеличение высоты увеличитает кол во осадков при том что на высоте температура ниже хмхм
+
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	double T = clock();
-	//cout <<"tick time: "<< T - t << endl;// время одного тика(если в update пусто то выводит время отрисовки экрана)
+
+	cout <<"tick time: "<< T - t <<" "<<T<<"  "<<waterLvl<<" "<< persent <<"% " << endl;// время одного тика(если в update пусто то выводит время отрисовки экрана)
+	
 	t = T;
 	
 }
@@ -207,12 +216,9 @@ void ofApp::draw(){
 			int h = (HeightMap[i][j] - waterLvl) * normed;
 			if (!(j<0 || j>Width))// если камера захватывает территорию без карты высот то там ничего не рисуем
 			{
-				if ((HeightMap[i][j] <= waterLvl) && (HeightMap[i][j] >= -5 + waterLvl))
-					ofSetColor(0, 255, 255);//вода у берега
-				else
-					if ((HeightMap[i][j] <= -5 + waterLvl))
+					if ((HeightMap[i][j] <= waterLvl))
 						ofSetColor(0, 0, 128);
-					else
+					else/*
 						if ((HeightMap[i][j] >= waterLvl) && (HeightMap[i][j] <= 1 + waterLvl))
 							ofSetColor(218, 165, 32);//песок
 
@@ -229,7 +235,7 @@ void ofApp::draw(){
 										if (HeightMap[i][j] > 80 && HeightMap[i][j] < 170)
 											ofSetColor(139, 139, 141);
 										else
-
+										*/
 							ofSetColor(h, h, h);
 				ofRect(i , j , 1, 1);
 			}
