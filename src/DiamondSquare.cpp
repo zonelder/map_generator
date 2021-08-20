@@ -1,7 +1,9 @@
 /// <DIAMOND SQUARE>
 #include "System.cpp"
+#include<memory>
+using arr_ptr_type = std::shared_ptr<int[]>;
 unsigned int roudness = 1;
-void squareStep(int** Array, int x, int y, int reach, unsigned int Width)
+void squareStep(std::shared_ptr<arr_ptr_type[]>Array, int x, int y, int reach, unsigned int Width)
 {
 	int count = 0;
 	float avg = 0.0f;
@@ -37,7 +39,7 @@ void squareStep(int** Array, int x, int y, int reach, unsigned int Width)
 	else
 		Array[x][y] = round(avg);
 }
-void diamondStep(int** Array, int x, int y, int reach, unsigned int Width)
+void diamondStep(std::shared_ptr<arr_ptr_type[]>Array, int x, int y, int reach, unsigned int Width)
 {
 	int count = 0;
 	float avg = 0.0f;
@@ -76,7 +78,7 @@ void diamondStep(int** Array, int x, int y, int reach, unsigned int Width)
 			Array[x][y] = (int)avg;
 	}
 }
-void diamondSquare(int** Array, int size, unsigned int Width)
+void diamondSquare(std::shared_ptr<arr_ptr_type[]> Array, int size, unsigned int Width)
 {
 	int half = size / 2;
 	if (half < 1)

@@ -3,9 +3,11 @@
 #include<ctime>
 #include "BIOMS.cpp"
 #include "DiamondSquare.h"
+using arr_ptr_type = std::shared_ptr<int[]>;
 unsigned const int Width = 1024;
 int waterLvl = 0;
-int**HeightMap;//нужно удаление массива или создать класс карты и все атрибуты точек держать в этом классе. на каждую точку приходиться параметр высоты, владжности, температруы, расстояни до воды исцева открашивания
+std::shared_ptr<arr_ptr_type[]> HeightMap(new arr_ptr_type[Width]);
+//int**HeightMap;//нужно удаление массива или создать класс карты и все атрибуты точек держать в этом классе. на каждую точку приходиться параметр высоты, владжности, температруы, расстояни до воды исцева открашивания
 int Temperature[Width][Width];
 int Wet[Width][Width];
 int persent = 0;
@@ -19,8 +21,7 @@ void ofApp::setup(){
 	
 	
 	int Max = 0;
-	/*///////////////////////инициализация массива высот////////////////////////////*/
-	HeightMap = new int*[Width];
+	/*///////////////////////инициализация массива высот////////////////////////////*//*HeightMap = new int*[Width];
 	*HeightMap = new int[Width * Width];//нигде память не освобождается
 	for (int i = 0; i < Width; i++)
 
@@ -30,6 +31,15 @@ void ofApp::setup(){
 		for (int j = 0; j < Width; j++)
 		{
 
+			HeightMap[i][j] = 0;
+		}
+	}
+																					  */
+	
+	for (int i = 0; i < Width; i++)
+		HeightMap[i] = std::make_unique<int[]>(Width);
+	for (int i = 0; i < Width; i++) {
+		for (int j = 0; j < Width; j++) {
 			HeightMap[i][j] = 0;
 		}
 	}
@@ -132,14 +142,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-	if (key == 'd')//удаление массива высот пперед выходом
-	{
-		cout << "key pressed" << endl;
-		for (register int i = 0; i < Width; i++)
-			delete HeightMap[i];
-
-		delete[]HeightMap;
-	}
+	
 }
 
 //--------------------------------------------------------------
