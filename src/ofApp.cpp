@@ -12,7 +12,8 @@ int LandPerCent = 0;
 int HeightMap[Width][Width];
 int Temperature[Width][Width];
 int Wet[Width][Width];
-
+int camX = 0;
+int camY = 0;
 double t;
 using namespace std;
 
