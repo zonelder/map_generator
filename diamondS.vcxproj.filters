@@ -7,6 +7,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\BIOMS.cpp" />
     <ClCompile Include="src\DiamondSquare.cpp" />
+    <ClCompile Include="Matrix.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -22,6 +23,7 @@
     </ClInclude>
     <ClInclude Include="Map.h" />
     <ClInclude Include="src\DiamondSquare.h" />
+    <ClInclude Include="src\Matrix.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

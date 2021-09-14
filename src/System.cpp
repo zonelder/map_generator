@@ -1,6 +1,6 @@
 #pragma once
-
 #include<cstdlib>
+#include<ctime>
 bool edgeCondition(int coord_x, int coord_y, int reach, unsigned int Width)
 {
 	if (coord_x - reach == 0 || coord_x + reach == Width)

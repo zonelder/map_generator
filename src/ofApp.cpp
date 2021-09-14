@@ -1,15 +1,9 @@
 #include "ofApp.h"
-#include<cstdio>
-#include<ctime>
 #include "BIOMS.cpp"
-#include "DiamondSquare.h"
-using arr_ptr_type = std::shared_ptr<int[]>;
+#include "Matrix.h"
 unsigned const int Width = 1024;
+Matrix<int> Map(Width, Width);
 int waterLvl = 0;
-std::shared_ptr<arr_ptr_type[]> HeightMap(new arr_ptr_type[Width]);
-//int**HeightMap;//нужно удаление массива или создать класс карты и все атрибуты точек держать в этом классе. на каждую точку приходиться параметр высоты, владжности, температруы, расстояни до воды исцева открашивания
-int Temperature[Width][Width];
-int Wet[Width][Width];
 int persent = 0;
 double t;
 using namespace std;
@@ -17,77 +11,47 @@ using namespace std;
 
 
 void ofApp::setup(){
-	srand(time(0));
 	
-	
-	int Max = 0;
-	/*///////////////////////инициализация массива высот////////////////////////////*//*HeightMap = new int*[Width];
-	*HeightMap = new int[Width * Width];//нигде память не освобождается
-	for (int i = 0; i < Width; i++)
-
-	{
-		if(i!=0)
-		HeightMap[i] = HeightMap[i - 1] + Width;
-		for (int j = 0; j < Width; j++)
-		{
-
-			HeightMap[i][j] = 0;
-		}
-	}
-																					  */
-	
-	for (int i = 0; i < Width; i++)
-		HeightMap[i] = std::make_unique<int[]>(Width);
-	for (int i = 0; i < Width; i++) {
-		for (int j = 0; j < Width; j++) {
-			HeightMap[i][j] = 0;
-		}
-	}
-	/*///////////////////////////////////////////////////////////////////////////////*/
-	int size = Width;
-	diamondSquare(HeightMap, size / 2,Width);
-	for (int i = 0; i < Width; i++)
-		for (int j = 0; j < Width; j++)
-		{
-			HeightMap[i][j] *= HeightMap[i][j];
-			if (Max < HeightMap[i][j])
-			{
-				Max = HeightMap[i][j];
-			}
-		}
-	int MaxNormed = int(Max/255)+1;
-	Max = 0;
-	for (int i = 0; i < Width; i++)
-		for (int j = 0; j < Width; j++)
-		{
-				HeightMap[i][j] /= MaxNormed;//числа межлу -1000 и 256; можно еще и нормировать но я хочу оставить ноль недвижимой точкой, так получаеться 
-				if (Max < HeightMap[i][j])
-					Max = HeightMap[i][j];
-	 }
-	cout << "height in range: " << 0 << " - " << Max << endl;
+	/*///////////////////////инициализация массива высот////////////////////////////fill(0)*/
+	Map.fill(0);
+	/*///////////////////////////////////////////////////////////////////////////////нормировка*/
+	Map.Generate();
+	Map.Scaling(255);
+	cout << "height in range: " << 0 << " - " << Map.Max()<< endl;
+	/// <WaterLvl setting>
 	int fullArea = 0;
 	int dirt = 0;
-	
+
 	fullArea = Width * Width;
 	int need_persent = 24;
-	for(int step=0;step<100;step++){
+	for (int step = 0; step < 100; step++) {
 		bool is_up = true;
 		if (need_persent > persent)
 			waterLvl -= 1;
-		if(need_persent < persent)
+		if (need_persent < persent)
 			waterLvl += 1;
-		
+
 		for (int i = 0; i < Width; i++)
-		for (int j = 0; j < Width; j++)
-		{
-			if (HeightMap[i][j] > waterLvl)
-				dirt++;
-		}
+			for (int j = 0; j < Width; j++)
+			{
+				if (Map(i, j) > waterLvl)
+					dirt++;
+			}
 		persent = float(dirt) / float(fullArea) * 100;
 		dirt = 0;
 	}
-	
-	
+
+	for (int i = 0; i < Width; i++)
+		for (int j = 0; j < Width; j++)
+		{
+			if (Map(i, j) > waterLvl)
+				Map(i, j) -= waterLvl;
+			else
+				Map(i, j) = 0;
+		}
+	Map.Scaling(255);
+	/// </WaterLvl setting>
+
 }//так уменьшение температуры способствует уменьшению осадков но увеличение высоты увеличитает кол во осадков при том что на высоте температура ниже хмхм
 
 
@@ -103,16 +67,15 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	float normed = 255 / (255.0f - waterLvl);
 	ofBackground(255, 255, 255);
 	for (int i =0; i < ofGetWidth(); i++)
 	{	if (!(i<0 || i>Width))// если камера захватывает территорию без карты высот то там ничего не рисуем
 		for (int j = 0; j < ofGetHeight(); j++)
 		{
-			int h = (HeightMap[i][j] - waterLvl) * normed;
+			int h = Map(i, j);
 			if (!(j<0 || j>Width))// если камера захватывает территорию без карты высот то там ничего не рисуем
 			{
-					if ((HeightMap[i][j] <= waterLvl))
+					if ((Map(i,j)==0))
 						ofSetColor(0, 0, 128);
 					else/*
 						if ((HeightMap[i][j] >= waterLvl) && (HeightMap[i][j] <= 1 + waterLvl))
