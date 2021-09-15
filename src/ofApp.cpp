@@ -3,8 +3,9 @@
 #include "Matrix.h"
 unsigned const int Width = 1024;
 Matrix<int> Map(Width, Width);
+Matrix<ofColor>color(Width, Width);
 int waterLvl = 0;
-int persent = 0;
+int persent = 24;
 double t;
 using namespace std;
 
@@ -18,48 +19,44 @@ void ofApp::setup(){
 	Map.Generate();
 	Map.Scaling(255);
 	cout << "height in range: " << 0 << " - " << Map.Max()<< endl;
-	/// <WaterLvl setting>
-	int fullArea = 0;
-	int dirt = 0;
-
-	fullArea = Width * Width;
-	int need_persent = 24;
-	for (int step = 0; step < 100; step++) {
-		bool is_up = true;
-		if (need_persent > persent)
-			waterLvl -= 1;
-		if (need_persent < persent)
-			waterLvl += 1;
-
-		for (int i = 0; i < Width; i++)
-			for (int j = 0; j < Width; j++)
-			{
-				if (Map(i, j) > waterLvl)
-					dirt++;
-			}
-		persent = float(dirt) / float(fullArea) * 100;
-		dirt = 0;
-	}
+	Map.WaterLvl_setting(24);
 
 	for (int i = 0; i < Width; i++)
 		for (int j = 0; j < Width; j++)
 		{
-			if (Map(i, j) > waterLvl)
-				Map(i, j) -= waterLvl;
-			else
-				Map(i, j) = 0;
-		}
-	Map.Scaling(255);
-	/// </WaterLvl setting>
 
+			if ((Map(i, j) == 0))
+				color(i,j)=ofColor(0, 0, 128);
+			else/*
+				if ((HeightMap[i][j] >= waterLvl) && (HeightMap[i][j] <= 1 + waterLvl))
+					ofSetColor(218, 165, 32);//песок
+
+				else
+					if (HeightMap[i][j] > 170)
+						ofSetColor(255, 250, 250);
+					else
+						if ((HeightMap[i][j] < 40) && (HeightMap[i][j] > 1 + waterLvl))
+							ofSetColor(144, 238, 144);
+						else
+							if (HeightMap[i][j] >= 40 && HeightMap[i][j] <= 80)
+								ofSetColor(205, 179, 139);
+							else
+								if (HeightMap[i][j] > 80 && HeightMap[i][j] < 170)
+									ofSetColor(139, 139, 141);
+								else
+								*/
+				color(i,j)=ofColor(Map(i,j), Map(i, j), Map(i, j));
+
+		}
 }//так уменьшение температуры способствует уменьшению осадков но увеличение высоты увеличитает кол во осадков при том что на высоте температура ниже хмхм
 
 
 //--------------------------------------------------------------
 void ofApp::update(){
 	double T = clock();
-
-	cout <<"tick time: "<< T - t <<" "<<T<<"  "<<waterLvl<<" "<< persent <<"% " << endl;// время одного тика(если в update пусто то выводит время отрисовки экрана)
+	system("cls");
+	cout << "tick time " << " time " << "     water" << "     persent" << endl;
+	cout << T - t <<"        "<<T<<"       "<<waterLvl<<"     "<< persent <<"% " << endl;// время одного тика(если в update пусто то выводит время отрисовки экрана)
 	
 	t = T;
 	
@@ -75,27 +72,7 @@ void ofApp::draw(){
 			int h = Map(i, j);
 			if (!(j<0 || j>Width))// если камера захватывает территорию без карты высот то там ничего не рисуем
 			{
-					if ((Map(i,j)==0))
-						ofSetColor(0, 0, 128);
-					else/*
-						if ((HeightMap[i][j] >= waterLvl) && (HeightMap[i][j] <= 1 + waterLvl))
-							ofSetColor(218, 165, 32);//песок
-
-						else
-							if (HeightMap[i][j] > 170)
-								ofSetColor(255, 250, 250);
-							else
-								if ((HeightMap[i][j] < 40) && (HeightMap[i][j] > 1 + waterLvl))
-									ofSetColor(144, 238, 144);
-								else
-									if (HeightMap[i][j] >= 40 && HeightMap[i][j] <= 80)
-										ofSetColor(205, 179, 139);
-									else
-										if (HeightMap[i][j] > 80 && HeightMap[i][j] < 170)
-											ofSetColor(139, 139, 141);
-										else
-										*/
-							ofSetColor(h, h, h);
+				ofSetColor(color(i, j));
 				ofRect(i , j , 1, 1);
 			}
 

@@ -165,4 +165,38 @@ public:
 
         return max;
     }
+    void WaterLvl_setting(unsigned int persent)
+    {
+        int fullArea = 0;
+        int dirt = 0;
+
+        fullArea = Width * Width;
+        int real_persent = 0;
+        for (int step = 0; step < 100; step++) {
+            bool is_up = true;
+                if (real_persent < persent)
+                waterLvl -= 1;
+              if (real_persent > persent)
+                waterLvl += 1;
+
+            for (int i = 0; i < Width; i++)
+                for (int j = 0; j < Width; j++)
+                {
+                    if (Array[i][ j] > waterLvl)
+                        dirt++;
+                }
+           real_persent = float(dirt) / float(fullArea) * 100;
+            dirt = 0;
+        }
+
+        for (int i = 0; i < Width; i++)
+            for (int j = 0; j < Width; j++)
+            {
+                if (Array[i][j] > waterLvl)
+                    Array[i][j] -= waterLvl;
+                else
+                    Array[i][j] = 0;//что то сделать с дном
+            }
+        this->Scaling(255);
+    }
 };

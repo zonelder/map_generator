@@ -180,7 +180,6 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="src\BIOMS.cpp" />
     <ClCompile Include="src\DiamondSquare.cpp" />
     <ClCompile Include="src\main.cpp" />
