@@ -1,7 +1,6 @@
 #pragma once
 #include<memory>
 #include "System.cpp"
-int roudness = 1;
 template<class T>
 class Matrix
 {
@@ -10,6 +9,8 @@ public:
     using size_type = std::size_t;
     using arr_ptr_type = std::unique_ptr<num_type[]>;
 private:
+
+    int roudness = 1;
     size_type n, m;
     std::unique_ptr<arr_ptr_type[]> Array;
 public:
@@ -23,6 +24,8 @@ public:
     }
 
     size_type getRowCount() { return n; }
+    void setRoudness(int r) { roudness = r; }
+    int getRoudness() { return roudness; }
     size_type getColCount() { return m; }
     void show()
     {
@@ -84,8 +87,7 @@ public:
         avg /= count;
         if (avg < 0)
             avg = 0;
-        else
-            Array[x][y] = round(avg);
+        Array[x][y] = int(avg);
     }
     void diamondStep(int x, int y, int reach, unsigned int Width)
     {
@@ -122,8 +124,7 @@ public:
             avg /= count;
             if (avg < 0)
                 avg = 0;
-            else
-                Array[x][y] = (int)avg;
+                Array[x][y] = int(avg);
         }
     }
     void diamondSquare(int size, unsigned int Width)
@@ -139,21 +140,19 @@ public:
         {
             col++;
             //If this is an odd column.
-            if (col % 2 == 1)
-                for (int z = half; z < Width; z += size)
-                    diamondStep(x % Width, z % Width, half, Width);
-            else
-                for (int z = 0; z < Width; z += size)
+                for (int z = half*(col % 2); z < Width; z += size)
                     diamondStep(x % Width, z % Width, half, Width);
         }
         diamondSquare(size / 2, Width);
     }
-    void Generate()
+    void Generate()//flag can be "diamondSquare" or "linear"
     {
         srand(time(0));
         int Width = n;
         int size = Width / 2;
-        diamondSquare(size, Width);
+            diamondSquare(size, Width);
+            
+
     }
     T Max()
     {
@@ -173,7 +172,6 @@ public:
         fullArea = Width * Width;
         int real_persent = 0;
         for (int step = 0; step < 100; step++) {
-            bool is_up = true;
                 if (real_persent < persent)
                 waterLvl -= 1;
               if (real_persent > persent)
@@ -199,4 +197,5 @@ public:
             }
         this->Scaling(255);
     }
+    
 };
