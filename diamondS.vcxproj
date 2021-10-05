@@ -181,17 +181,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\BIOMS.cpp" />
-    <ClCompile Include="src\DiamondSquare.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="src\System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Bioms.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Matrix.h" />
-    <ClInclude Include="src\DiamondSquare.h" />
     <ClInclude Include="src\ofApp.h" />
-    <ClInclude Include="system.h" />
+    <ClInclude Include="src\System.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

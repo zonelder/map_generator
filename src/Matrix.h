@@ -1,6 +1,6 @@
 #pragma once
 #include<memory>
-#include "System.cpp"
+#include "System.h"
 template<class T>
 class Matrix
 {

@@ -1,7 +1,7 @@
 #include "ofApp.h"
 #include "BIOMS.h"
 #include "Map.h"
-#include "Matrix.h"
+//#include "Matrix.h"
 double t;
 int step = 0;
 Map GlobalMap(24);
