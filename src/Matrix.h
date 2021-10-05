@@ -9,11 +9,16 @@ public:
     using size_type = std::size_t;
     using arr_ptr_type = std::unique_ptr<num_type[]>;
 private:
-
     int roudness = 1;
+    int min_bound = 0;
     size_type n, m;
     std::unique_ptr<arr_ptr_type[]> Array;
 public:
+    Matrix()
+    {
+        n = 0; m = 0;
+        Array = nullptr;
+    }
     Matrix(std::size_t n, std::size_t m) : n(n), m(m), Array(std::make_unique<arr_ptr_type[]>(n))
     {
         for (std::size_t i = 0; i < n; ++i)
@@ -22,7 +27,7 @@ public:
     num_type& operator()(size_type i, size_type j) {
         return Array[i][j];
     }
-
+    void setMin_bound(T value) { min_bound = value; }
     size_type getRowCount() { return n; }
     void setRoudness(int r) { roudness = r; }
     int getRoudness() { return roudness; }
@@ -85,8 +90,8 @@ public:
         }
         avg += random(int(-roudness * reach), int(roudness * reach));
         avg /= count;
-        if (avg < 0)
-            avg = 0;
+        if (avg < min_bound)
+                avg =  min_bound;
         Array[x][y] = int(avg);
     }
     void diamondStep(int x, int y, int reach, unsigned int Width)
@@ -122,8 +127,8 @@ public:
             }
             avg += random(-roudness * reach, roudness * reach);
             avg /= count;
-            if (avg < 0)
-                avg = 0;
+            if (avg < min_bound)
+               avg = min_bound;
                 Array[x][y] = int(avg);
         }
     }
@@ -164,8 +169,9 @@ public:
 
         return max;
     }
-    void WaterLvl_setting(unsigned int persent)
+    void WaterLvl_setting(unsigned int persent,int Width)
     {
+        int waterLvl = 0;
         int fullArea = 0;
         int dirt = 0;
 
@@ -190,10 +196,10 @@ public:
         for (int i = 0; i < Width; i++)
             for (int j = 0; j < Width; j++)
             {
-                if (Array[i][j] > waterLvl)
+                //if (Array[i][j] > waterLvl)
                     Array[i][j] -= waterLvl;
-                else
-                    Array[i][j] = 0;//что то сделать с дном
+                //else
+                  //  Array[i][j] = 0;//что то сделать с дном
             }
         this->Scaling(255);
     }

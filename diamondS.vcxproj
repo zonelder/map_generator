@@ -186,9 +186,10 @@
     <ClCompile Include="src\ofApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Bioms.h" />
+    <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Matrix.h" />
     <ClInclude Include="src\DiamondSquare.h" />
-    <ClInclude Include="Map.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="system.h" />
   </ItemGroup>

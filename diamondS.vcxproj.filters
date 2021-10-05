@@ -20,9 +20,10 @@
     <ClInclude Include="system.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Map.h" />
     <ClInclude Include="src\DiamondSquare.h" />
     <ClInclude Include="src\Matrix.h" />
+    <ClInclude Include="src\Bioms.h" />
+    <ClInclude Include="src\Map.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

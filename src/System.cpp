@@ -14,6 +14,10 @@ int random(int a, int b)
 {
 	return (a + rand() % int(b - a + 1));
 }
+ofColor random(ofColor range)
+{
+	return ofColor(rand() % range.r, rand() % range.g, rand() % range.b);
+}
 
 /*int Temp(int j, unsigned int Width)
 {
